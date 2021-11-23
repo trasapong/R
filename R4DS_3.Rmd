@@ -1,0 +1,430 @@
+---
+title: "R4DS 3-Data Visualization"
+output:
+  ioslides_presentation:
+    incremental: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Data Visualization
+
+## 3.1.1 Prerequisites
+
+```{r, echo = TRUE}
+#install.packages("tidyverse")
+library(tidyverse)
+```
+
+# 3.2 First steps
+
+## 3.2.1 The mpg data frame 
+
+```{r, echo = TRUE}
+mpg
+# ?mpg
+```
+
+## 3.2.2 Creating a ggplot
+
+1. displ, a car's engine size, in litres.
+2. hwy, a car's fuel efficiency on the highway, in miles per gallon (mpg). A car with a low fuel efficiency consumes more fuel than a car with a high fuel efficiency when they travel the same distance.
+
+## 3.2.2 Creating a ggplot {.smaller}
+
+```{r, echo = TRUE, out.width='80%',fig.align='center'}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+*some points fall outside linear trend
+
+## 3.2.3 A graphing template
+
+```{r, eval=FALSE, echo=TRUE}
+ggplot(data = <DATA>) + 
+  <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+```
+
+The rest of this chapter will show you how to complete and extend this template to make different types of graphs. We will begin with the \<MAPPINGS\> component.
+
+# 3.3 Aesthetic mappings
+
+## 3.3 Aesthetic mappings {.smaller}
+
+```{r, echo = TRUE, out.width='80%',fig.align='center'}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = class))
+```
+
+*sports cars have large engine, but small body -> improves gas mileage
+
+## 3.3 Aesthetic mappings {.smaller}
+
+Not a good idea!!!
+
+```{r, echo = TRUE, out.width='60%',fig.align='center'}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, size = class))
+```
+
+## 3.3 Aesthetic mappings {.smaller}
+
+```{r, echo = TRUE, out.width='60%',fig.align='center'}
+# alpha
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, alpha = class))
+```
+
+## 3.3 Aesthetic mappings {.smaller}
+
+```{r, echo = TRUE, fig.show='hide'}
+# shape ***only 6 shapes available, SUV unplotted
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, shape = class))
+```
+
+## 3.3 Aesthetic mappings 
+
+```{r,fig.align='center', warning=FALSE}
+# shape ***only 6 shapes available, SUV unplotted
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, shape = class))
+```
+
+## 3.3 Aesthetic mappings {.smaller}
+
+```{r, echo = TRUE, fig.align='center'}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
+```
+
+## 3.3 Aesthetic mappings {.smaller}
+
+What is wrong with this one?
+
+```{r, echo = TRUE, fig.align='center', out.width='80%'}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = "blue"))
+```
+
+# 3.4 Common problems
+
+## 3.4 Common problems
+
+One common problem when creating ggplot2 graphics is to put the + in the wrong place: it has to come at the end of the line, not the start. In other words, make sure you haven’t accidentally written code like this:
+
+```{r, echo = TRUE, eval=FALSE}
+ggplot(data = mpg) 
++ geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+# 3.5 Facets
+
+## facet_wrap (1 var)
+
+```{r, echo = TRUE, fig.align='center', out.width='80%'}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_wrap(~ class, nrow = 2)        # ~ formula
+```
+
+## facet_grid (2 vars)
+
+```{r, echo = TRUE, fig.align='center', out.width='80%'}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_grid(drv ~ cyl)
+```
+
+## facet_grid (2 vars) {.smaller}
+
+*Not facet -> use . instead of var name
+
+```{r, echo = TRUE, fig.align='center', out.width='70%'}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_grid(. ~ cyl)
+```
+
+## facet_grid (2 vars) {.smaller}
+
+*Not facet -> use . instead of var name
+
+```{r, echo = TRUE, fig.align='center', out.width='70%'}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_grid(drv ~ .)
+```
+
+## facet final note
+
+*** Facet on categorical var only!
+
+# 3.6 Geometric objects
+
+## 3.6 Geometric objects {.smaller}
+
+How are these two plots similar?
+
+```{r, out.width='50%', fig.show='hold', warning=FALSE, message=FALSE}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+ggplot(data = mpg) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+```
+
+- Both plots contain the same x variable, the same y variable, and both describe the same data. But the plots are not identical. Each plot uses a different visual object to represent the data. 
+- In ggplot2 syntax, we say that they use different **geoms**.
+
+## 3.6 Geometric objects
+
+- A geom is the geometrical object that a plot uses to represent data. People often describe plots by the type of geom that the plot uses. For example, bar charts use bar geoms, line charts use line geoms, boxplots use boxplot geoms, and so on. 
+- As we see above, you can use different geoms to plot the same data. The plot on the left uses the point geom, and the plot on the right uses the smooth geom, a smooth line fitted to the data.
+
+## 3.6 Geometric objects
+
+To change the geom in your plot, change the geom function that you add to ggplot(). For instance, to make the plots we have seen earlier, you can use this code:
+
+```{r, echo = TRUE, eval=FALSE}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+
+ggplot(data = mpg) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+```
+
+## 3.6 Geometric objects
+
+- Every geom function in ggplot2 takes a mapping argument. 
+- However, not every aesthetic works with every geom. You could set the shape of a point, but you couldn’t set the “shape” of a line. 
+- On the other hand, you could set the linetype of a line. geom_smooth() will draw a different line, with a different linetype, for each unique value of the variable that you map to linetype.
+
+## 3.6 Geometric objects
+
+```{r, echo = TRUE, fig.align='center', out.width='80%', message=FALSE}
+ggplot(data = mpg) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy, linetype = drv))
+```
+
+## Gallery
+
+- <https://exts.ggplot2.tidyverse.org/gallery/>
+
+- <https://www.rstudio.com/resources/cheatsheets/>
+
+## 3.6 Geometric objects {.smaller}
+
+```{r, echo = TRUE, out.width='30%', fig.show='hold', message=FALSE}
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy, group = drv))
+
+ggplot(data = mpg) +
+  geom_smooth(
+    mapping = aes(x = displ, y = hwy, color = drv),
+    show.legend = FALSE
+  )
+```
+
+## 3.6 Geometric objects {.smaller}
+
+```{r, echo = TRUE, out.width='80%', message=FALSE, fig.align='center'}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+```
+
+## 3.6 Geometric objects {.smaller}
+
+Global mapping
+
+```{r, echo = TRUE, out.width='80%', message=FALSE, fig.align='center'}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point() + 
+  geom_smooth()
+```
+
+## 3.6 Geometric objects {.smaller}
+
+If you place mappings in a geom function, ggplot2 will treat them as local mappings for the layer. It will use these mappings to extend or overwrite the global mappings for that layer only. This makes it possible to display different aesthetics in different layers.
+
+```{r, echo = TRUE, out.width='60%', message=FALSE, fig.align='center'}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point(mapping = aes(color = class)) + 
+  geom_smooth()
+```
+
+## 3.6 Geometric objects {.smaller}
+
+You can use the same idea to specify different data for each layer. Here, our smooth line displays just a subset of the mpg dataset, the subcompact cars. The local data argument in geom_smooth() overrides the global data argument in ggplot() for that layer only.
+
+```{r, echo = TRUE, out.width='60%', message=FALSE, fig.align='center'}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point(mapping = aes(color = class)) + 
+  geom_smooth(data = filter(mpg, class == "subcompact"), se = FALSE)
+```
+
+## 3.6 Geometric objects {.smaller}
+
+```{r, echo = TRUE, out.width='80%', message=FALSE, fig.align='center'}
+ggplot(data = mpg) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy, 
+                            color = drv, linetype = drv)) +
+  geom_point(mapping = aes(x = displ, y = hwy, color = drv))
+```
+
+## 3.6 Geometric objects {.smaller}
+
+```{r, echo = TRUE, out.width='80%', message=FALSE, fig.align='center'}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) + 
+  geom_smooth(mapping = aes(linetype = drv)) +
+  geom_point()
+```
+
+# 3.7 Statistical transformations
+
+## diamonds dataset
+
+```{r, echo = TRUE}
+diamonds
+# ?diamonds
+```
+
+## 3.7 Statistical transformations
+
+```{r, echo = TRUE, out.width='80%', message=FALSE, fig.align='center'}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut))
+```
+
+## 3.7 Statistical transformations
+
+Many graphs, like scatterplots, plot the raw values of your dataset. 
+Other graphs, like bar charts, calculate new values to plot:
+ 
+- bar charts, histograms, and frequency polygons bin your data and then plot bin counts,  the number of points that fall in each bin.
+- smoothers fit a model to your data and then plot predictions from the model.
+- boxplots compute a robust summary of the distribution and then display a specially formatted box.
+
+## 3.8 Position adjustments
+
+```{r, echo = TRUE, out.width='50%', fig.show='hold'}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, colour = cut))
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = cut))
+```
+
+## 3.8 Position adjustments
+
+```{r, echo = TRUE, out.width='80%', fig.align='center'}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity))
+```
+
+## 3.8 Position adjustments (identity)
+
+```{r, echo = TRUE, out.width='50%', fig.show='hold'}
+ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) + 
+  geom_bar(alpha = 1/5, position = "identity")
+ggplot(data = diamonds, mapping = aes(x = cut, colour = clarity)) + 
+  geom_bar(fill = NA, position = "identity")
+```
+
+## 3.8 Position adjustments (fill)
+
+```{r, echo = TRUE, out.width='80%', fig.align='center'}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "fill")
+```
+
+## 3.8 Position adjustments (dodge)
+
+```{r, echo = TRUE, out.width='80%', fig.align='center'}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "dodge")
+```
+
+## 3.8 Position adjustments {.smaller}
+
+Notice that this plot display only 126 points from 234 observations.
+
+```{r, echo = TRUE, out.width='60%', fig.align='center'}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+The values of hwy and displ are rounded so the points appear on a grid and many points overlap each other. This problem is known as **overplotting**.
+
+## 3.8 Position adjustments 
+
+```{r, echo = TRUE, out.width='80%', fig.align='center'}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy), position = "jitter")
+```
+
+# 3.9 Coordinate systems
+
+## coord_flip()
+
+```{r, echo = TRUE, out.width='50%', fig.show='hold'}
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) + 
+  geom_boxplot()
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) + 
+  geom_boxplot() +
+  coord_flip()
+```
+
+## coord_quickmap()
+
+```{r, echo = TRUE, out.width='50%', fig.show='hold'}
+nz <- map_data("nz")
+
+ggplot(nz, aes(long, lat, group = group)) +
+  geom_polygon(fill = "white", colour = "black")
+
+ggplot(nz, aes(long, lat, group = group)) +
+  geom_polygon(fill = "white", colour = "black") +
+  coord_quickmap()
+```
+
+## coord_polar() {.smaller}
+
+```{r, echo = TRUE, out.width='50%', fig.show='hold'}
+bar <- ggplot(data = diamonds) + 
+  geom_bar(
+    mapping = aes(x = cut, fill = cut), 
+    show.legend = FALSE,
+    width = 1
+  ) + 
+  theme(aspect.ratio = 1) +
+  labs(x = NULL, y = NULL)
+
+bar + coord_flip()
+bar + coord_polar()
+```
+
+# 3.10 The layered grammar of graphics
+
+## 3.10 The layered grammar of graphics
+
+```{r, echo = TRUE, eval=FALSE}
+ggplot(data = <DATA>) + 
+  <GEOM_FUNCTION>(
+     mapping = aes(<MAPPINGS>),
+     stat = <STAT>, 
+     position = <POSITION>
+  ) +
+  <COORDINATE_FUNCTION> +
+  <FACET_FUNCTION>
+```
+
+
+
+
+
