@@ -9,6 +9,24 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{css, echo=FALSE}
+pre {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 300px;
+}
+
+.scroll-100 {
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: inherit;
+}
+
+```
+
 # Data Transformation
 
 ## 5.1 Introduction
@@ -19,7 +37,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## 5.1.1 Prerequisites {.smaller}
 
-```{r, echo = TRUE}
+```{r}
 #install.packages("nycflights13")
 library(nycflights13)
 library(tidyverse)
@@ -582,7 +600,7 @@ not_cancelled %>%
 
 These functions are complementary to filtering on ranks. Filtering gives you all variables, with each observation in a separate row:
 
-```{r, message=FALSE}
+```{r, message=FALSE, class.output="scroll-100"}
 not_cancelled %>% 
   group_by(year, month, day) %>% 
   mutate(r = min_rank(desc(dep_time))) %>% 
