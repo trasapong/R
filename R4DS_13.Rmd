@@ -1,0 +1,466 @@
+---
+title: "R4DS-13 Relational Data"
+output:
+  ioslides_presentation:
+    incremental: yes
+  beamer_presentation:
+    incremental: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{css, echo=FALSE}
+pre {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 300px;
+}
+
+.scroll-100 {
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: inherit;
+}
+
+```
+
+# 13 Relational Data
+
+## Relational Data : Introduction
+
+- It's rare that a data analysis involves only a single data frame.
+Typically you have many data frames, and you must combine them to answer the questions that you're interested in.
+
+- Collectively, multiple data frames are called **relational data** because it is the relations, not just the individual datasets, that are important.
+
+## Relational Data : Introduction
+
+- Relations are always defined between a pair of data frames.
+
+- All other relations are built up from this simple idea: the relations of three or more data frames are always a property of the relations between each pair.
+
+- Sometimes both elements of a pair can be the same data frame!
+This is needed if, for example, you have a data frame of people, and each person has a reference to their parents.
+
+## Relational Data : Introduction
+
+To work with relational data you need verbs that work with pairs of data frames.
+There are three families of verbs designed to work with relational data:
+
+-   **Mutating joins**, which add new variables to one data frame from matching observations in another.
+
+-   **Filtering joins**, which filter observations from one data frame based on whether or not they match an observation in the other data frame.
+
+-   **Set operations**, which treat observations as if they were set elements.
+
+
+## 13.1.1 Prerequisites {.smaller}
+
+We will explore relational data from `nycflights13` using the two-table verbs from dplyr.
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+
+## 13.2 nycflights13 {.smaller}
+
+nycflights13 contains five tibbles : `airlines`, `airports`, `weather` and `planes` which are all related to the `flights` data frame that you used earlier.
+
+`airlines` lets you look up the full carrier name from its abbreviated code:
+
+```{r, class.output="scroll-100"}
+airlines
+```
+
+
+## 13.2 nycflights13 {.smaller}
+
+`airports` gives information about each airport, identified by the FAA airport code:
+
+```{r}
+airports
+```
+
+## 13.2 nycflights13 {.smaller}
+
+`weather` gives the weather at each NYC airport for each hour:
+
+```{r}
+weather
+```
+
+## 13.2 nycflights13
+
+```{r, echo=FALSE, fig.align='center', out.width='100%'}
+knitr::include_graphics('https://d33wubrfki0l68.cloudfront.net/245292d1ea724f6c3fd8a92063dcd7bfb9758d02/5751b/diagrams/relational-nycflights.png')
+```
+
+## 13.2 nycflights13 
+
+-   `flights` connects to `planes` via a single variable, `tailnum`.
+
+-   `flights` connects to `airlines` through the `carrier` variable.
+
+-   `flights` connects to `airports` in two ways: via the `origin` and `dest` variables.
+
+-   `flights` connects to `weather` via `origin` (the location), and `year`, `month`, `day` and `hour` (the time).
+
+## 13.3 Keys
+
+- The variables used to connect each pair of data frames are called **keys**.
+
+- A key is a variable (or set of variables) that uniquely identifies an observation.
+
+- In simple cases, a single variable is sufficient to identify an observation.
+
+- For example, each plane is uniquely identified by its `tailnum`.
+In other cases, multiple variables may be needed.
+
+- For example, to identify an observation in `weather` you need five variables: `year`, `month`, `day`, `hour`, and `origin`.
+
+## 13.3 Keys
+
+There are two types of keys:
+
+-   A **primary key** uniquely identifies an observation in its own data frame.
+    For example, `planes$tailnum` is a primary key because it uniquely identifies each plane in the `planes` data frame.
+
+-   A **foreign key** uniquely identifies an observation in another data frame.
+    For example, `flights$tailnum` is a foreign key because it appears in the `flights` data frame where it matches each flight to a unique plane.
+
+## 13.3 Keys
+
+A variable can be both a primary key *and* a foreign key.
+For example, `origin` is part of the `weather` primary key, and is also a foreign key for the `airports` data frame.
+
+## 13.3 Keys
+
+Once you've identified the primary keys in your data frames, it's good practice to verify that they do indeed uniquely identify each observation.
+One way to do that is to `count()` the primary keys and look for entries where `n` is greater than one:
+
+```{r}
+planes %>% 
+  count(tailnum) %>% 
+  filter(n > 1)
+```
+
+## 13.3 Keys
+
+```{r}
+weather %>% 
+  count(year, month, day, hour, origin) %>% 
+  filter(n > 1)
+```
+
+## 13.3 Keys
+
+```{r}
+flights %>% 
+  count(year, month, day, flight) %>% 
+  filter(n > 1)
+```
+
+## 13.3 Keys
+
+```{r}
+flights %>% 
+  count(year, month, day, tailnum) %>% 
+  filter(n > 1)
+```
+
+## 13.3 Keys
+
+- A primary key and the corresponding foreign key in another data frame form a **relation**.
+
+- Relations are typically one-to-many.
+For example, each flight has one plane, but each plane has many flights.
+
+- In other data, you'll occasionally see a 1-to-1 relationship.
+You can think of this as a special case of 1-to-many.
+
+- You can model many-to-many relations with a many-to-1 relation plus a 1-to-many relation.
+For example, in this data there's a many-to-many relationship between airlines and airports: each airline flies to many airports; each airport hosts many airlines.
+
+## 13.4 Mutating joins
+
+```{r}
+flights2 <- flights %>% 
+  select(year:day, hour, origin, dest, tailnum, carrier)
+flights2
+```
+
+## 13.4 Mutating joins {.smaller}
+
+Imagine you want to add the full airline name to the `flights2` data.
+You can combine the `airlines` and `flights2` data frames with `left_join()`:
+
+```{r}
+flights2 %>%
+  select(-origin, -dest) %>% 
+  left_join(airlines, by = "carrier")
+```
+
+## 13.4 Mutating joins {.smaller}
+
+In this case, you could have got to the same place using `mutate()` and R's base subsetting:
+
+```{r}
+flights2 %>%
+  select(-origin, -dest) %>% 
+  mutate(name = airlines$name[match(carrier, airlines$carrier)])
+```
+
+## 13.4.1 Understanding joins {.smaller}
+
+```{r, echo=FALSE, fig.align='center', out.width='30%'}
+knitr::include_graphics('https://d33wubrfki0l68.cloudfront.net/108c0749d084c03103f8e1e8276c20e06357b124/5f113/diagrams/join-setup.png')
+```
+
+```{r}
+x <- tribble(
+  ~key, ~val_x,
+     1, "x1",
+     2, "x2",
+     3, "x3"
+)
+y <- tribble(
+  ~key, ~val_y,
+     1, "y1",
+     2, "y2",
+     4, "y3"
+)
+```
+
+## 13.4.2 Inner join
+
+```{r, echo=FALSE, fig.align='center', out.width='60%'}
+knitr::include_graphics('https://d33wubrfki0l68.cloudfront.net/3abea0b730526c3f053a3838953c35a0ccbe8980/7f29b/diagrams/join-inner.png')
+```
+
+```{r}
+x %>% 
+  inner_join(y, by = "key")
+```
+
+## 13.4.3 Outer joins
+
+An inner join keeps observations that appear in both data frames.
+An **outer join** keeps observations that appear in at least one of the data frames.
+There are three types of outer joins:
+
+-   A **left join** keeps all observations in `x`.
+
+-   A **right join** keeps all observations in `y`.
+
+-   A **full join** keeps all observations in `x` and `y`.
+
+## 13.4.3 Outer joins
+
+```{r, echo=FALSE, fig.align='center', out.width='40%'}
+knitr::include_graphics('https://d33wubrfki0l68.cloudfront.net/9c12ca9e12ed26a7c5d2aa08e36d2ac4fb593f1e/79980/diagrams/join-outer.png')
+```
+
+## 13.4.3 Outer joins
+
+Another way to depict the different types of joins is with a Venn diagram:
+
+```{r, echo=FALSE, fig.align='center', out.width='80%'}
+knitr::include_graphics('https://d33wubrfki0l68.cloudfront.net/aeab386461820b029b7e7606ccff1286f623bae1/ef0d4/diagrams/join-venn.png')
+```
+
+## 13.4.4 Duplicate keys
+
+So far all the diagrams have assumed that the keys are unique.
+But that's not always the case.
+This section explains what happens when the keys are not unique.
+There are two possibilities:
+
+1.  One data frame has duplicate keys.
+
+2.  Both data frames have duplicate keys.
+
+## 13.4.4 Duplicate keys
+
+**1. One data frame has duplicate keys.** This is useful when you want to add in additional information as there is typically a one-to-many relationship.
+
+```{r, echo=FALSE, fig.align='center', out.width='70%'}
+knitr::include_graphics('https://d33wubrfki0l68.cloudfront.net/6faac3e996263827cb57fc5803df6192541a9a4b/c7d74/diagrams/join-one-to-many.png')
+```
+
+## 13.4.4 Duplicate keys {.smaller}
+
+```{r}
+x <- tribble(
+  ~key, ~val_x,
+     1, "x1",
+     2, "x2",
+     2, "x3",
+     1, "x4"
+)
+y <- tribble(
+  ~key, ~val_y,
+     1, "y1",
+     2, "y2"
+)
+left_join(x, y, by = "key")
+```
+
+## 13.4.4 Duplicate keys
+
+**2. Both tables have duplicate keys.** This is usually an error because in neither table do the keys uniquely identify an observation. When you join duplicated keys, you get all possible combinations, the Cartesian product:
+
+```{r, echo=FALSE, fig.align='center', out.width='70%'}
+knitr::include_graphics('https://d33wubrfki0l68.cloudfront.net/d37530bbf7749f48c02684013ae72b2996b07e25/37510/diagrams/join-many-to-many.png')
+```
+
+## 13.4.4 Duplicate keys {.smaller}
+
+```{r}
+x <- tribble(
+  ~key, ~val_x,
+     1, "x1",
+     2, "x2",
+     2, "x3",
+     3, "x4"
+)
+y <- tribble(
+  ~key, ~val_y,
+     1, "y1",
+     2, "y2",
+     2, "y3",
+     3, "y4"
+)
+left_join(x, y, by = "key")
+```
+
+## 13.5 Filtering joins
+
+Filtering joins match observations in the same way as mutating joins, but affect the observations, not the variables.
+There are two types:
+
+-   `semi_join(x, y)` **keeps** all observations in `x` that have a match in `y`.
+
+-   `anti_join(x, y)` **drops** all observations in `x` that have a match in `y`.
+
+## Semi-joins {.smaller}
+
+Semi-joins are useful for matching filtered summary tables back to the original rows. For example, imagine you’ve found the top ten most popular destinations:
+
+```{r}
+top_dest <- flights %>%
+  count(dest, sort = TRUE) %>%
+  head(10)
+top_dest
+```
+
+## Semi-joins {.smaller}
+
+Now you want to find each flight that went to one of those destinations. You could construct a filter yourself:
+
+```{r}
+flights %>% 
+  filter(dest %in% top_dest$dest)
+```
+
+## Semi-joins {.smaller}
+
+Instead you can use a semi-join, which connects the two data frames like a mutating join, but instead of adding new columns, only keeps the rows in `x` that have a match in `y`:
+
+```{r, class.output="scroll-100"}
+flights %>% 
+  semi_join(top_dest)
+```
+
+## Semi-joins
+
+Graphically, a semi-join looks like this:
+
+```{r, echo=FALSE, fig.align='center', out.width='70%'}
+knitr::include_graphics('https://d33wubrfki0l68.cloudfront.net/028065a7f353a932d70d2dfc82bc5c5966f768ad/85a30/diagrams/join-semi.png')
+```
+
+## Semi-joins
+
+Only the existence of a match is important; it doesn’t matter which observation is matched. This means that filtering joins never duplicate rows like mutating joins do:
+
+```{r, echo=FALSE, fig.align='center', out.width='70%'}
+knitr::include_graphics('https://d33wubrfki0l68.cloudfront.net/e1d0283160251afaeca35cba216736eb995fee00/1b3cd/diagrams/join-semi-many.png')
+```
+
+## Anti-joins
+
+The inverse of a semi-join is an anti-join.
+An anti-join keeps the rows that *don't* have a match:
+
+```{r, echo=FALSE, fig.align='center', out.width='70%'}
+knitr::include_graphics('https://d33wubrfki0l68.cloudfront.net/f29a85efd53a079cc84c14ba4ba6894e238c3759/c1408/diagrams/join-anti.png')
+```
+
+## Anti-joins {.smaller}
+
+Anti-joins are useful for diagnosing join mismatches.
+For example, when connecting `flights` and `planes`, you might be interested to know that there are many `flights` that don't have a match in `planes`:
+
+```{r}
+flights %>%
+  anti_join(planes, by = "tailnum") %>%
+  count(tailnum, sort = TRUE)
+```
+
+## 13.7 Set operations
+
+The final type of two-table verb are the set operations.
+Generally, they are occasionally useful when you want to break a single complex filter into simpler pieces.
+All these operations work with a complete row, comparing the values of every variable.
+These expect the `x` and `y` inputs to have the same variables, and treat the observations like sets:
+
+-   `intersect(x, y)`: return only observations in both `x` and `y`.
+
+-   `union(x, y)`: return unique observations in `x` and `y`.
+
+-   `setdiff(x, y)`: return observations in `x`, but not in `y`.
+
+## 13.7 Set operations
+
+Given this simple data:
+
+```{r}
+df1 <- tribble(
+  ~x, ~y,
+   1,  1,
+   2,  1
+)
+df2 <- tribble(
+  ~x, ~y,
+   1,  1,
+   1,  2
+)
+```
+
+## 13.7 Set operations : `intersect()`
+
+```{r}
+intersect(df1, df2)
+```
+
+## 13.7 Set operations : `union()`
+
+```{r}
+# Note that we get 3 rows, not 4
+union(df1, df2)
+```
+
+## 13.7 Set operations : `setdiff()`
+
+```{r}
+setdiff(df1, df2)
+setdiff(df2, df1)
+```
+
+# End of Chapter
