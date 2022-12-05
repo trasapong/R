@@ -311,6 +311,30 @@ Other graphs, like bar charts, calculate new values to plot:
 - smoothers fit a model to your data and then plot predictions from the model.
 - boxplots compute a robust summary of the distribution and then display a specially formatted box.
 
+## 3.7 Statistical transformations
+
+```{r, echo=FALSE}
+# Define variable containing url
+url <- "https://d33wubrfki0l68.cloudfront.net/70a3b18a1128c785d8676a48c005ee9b6a23cc00/7283c/images/visualization-stat-bar.png"
+```
+![](`r url`){width=100%}
+
+## 3.7 Statistical transformations {.smaller}
+
+```{r, echo = TRUE, out.width='50%', fig.show='hold'}
+demo <- tribble(
+  ~cut,         ~freq,
+  "Fair",       1610,
+  "Good",       4906,
+  "Very Good",  12082,
+  "Premium",    13791,
+  "Ideal",      21551
+)
+
+ggplot(data = demo) +
+  geom_bar(mapping = aes(x = cut, y = freq), stat = "identity")
+```
+
 ## 3.8 Position adjustments
 
 ```{r, echo = TRUE, out.width='50%', fig.show='hold'}
