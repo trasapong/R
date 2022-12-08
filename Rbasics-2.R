@@ -29,7 +29,7 @@ df[df$x>5,]     # filter with condition
 df[(df$x>5)&(df$y< -1),]     # note: space b/w < and -
 max(df$y)
 which(df$y==max(df$y))
-df[which(y==max(y)),]
+df[which(df$y==max(df$y)),]
 
 df[,"x"]
 df[,c("x","z")]
@@ -63,5 +63,61 @@ str(df)
 df$z <- as.character(df$z)   # replace back
 df
 str(df)
+
+###
+
+# List
+list1 <- list(1,2,3)
+list1
+list2 <- list(c(1,2,3))
+list2
+(list3 <- list(c(1,2,3), 3:7))
+(list4 <- list(df, 1:10))
+(list5 <- list(df, 1:10, list3))
+names(list5)
+names(list5) <- c("df","vec","lst")
+names(list5)
+list5
+(list6 <- list(datafr = df, vect = 1:10, lst = list3))
+names(list6)
+list5[[1]]
+list5[["df"]]
+list5[[1]]$Sport
+list5[[1]][,"z"]
+list5[[1]][,"z", drop = FALSE]
+length(list5)
+list5[[4]] <- 2
+length(list5)
+list5[["NewElement"]] <- 3:6
+length(list5)
+names(list5)
+list5
+# Matrices
+A <- matrix(1:10, nrow = 5)
+A
+AA <- matrix(1:10, nrow = 5, byrow = TRUE)
+AA
+(B <- matrix(21:30, nrow = 5))
+(C <- matrix(21:40, nrow = 2))
+nrow(A)
+ncol(A)
+dim(A)
+A + B
+A * B
+A == B
+t(B)
+A %*% t(B)
+C
+colnames(C) <- LETTERS[1:10]
+C
+LETTERS
+letters
+# Arrays
+theArray <- array(1:12, dim = c(2,3,2))
+theArray
+theArray[1,,]
+theArray[1,,1]
+theArray[,,1]
+
 
 #################################################################################
