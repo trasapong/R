@@ -26,6 +26,7 @@ confint(mod, level = 0.99)
 summary(mod)
 anova(mod) # for the F-test in the last line of summary
 # Residual Standard Error in Summary is sqrt(Mean Sq of Residual in Anova)
+1.526^2
 plot(mod) #checking validity   --> Regression diagnostic plots
 
 # The diagnostic plots show residuals in four different ways:
@@ -74,9 +75,9 @@ confint(model1, level = 0.95)
 model2 <- lm(LungCap ~ Age + Smoke)
 summary(model2)
 # note the dummy var. or indicators
-# y_hat = b0+ b_age*X_age + b_smoke*X_smoke
-# = 1.09 + 0.56*X_age -0.65*X_smoke
-# where X_smoke = 1 (smoke=yes), 0 (smoke=no) 
+# y_hat = b0+ b_age*X_age + b_smokeyes*X_smokeyes
+# = 1.09 + 0.56*X_age -0.65*X_smokeyes
+# where X_smokeyes = 1 (smoke=yes), 0 (smoke=no) 
 
 # default -> alphabetically
 # to change reference 
