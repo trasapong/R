@@ -1,4 +1,4 @@
-# 1-Rbasic.R
+# Rbasics-1.R
 
 # this is a comment!!!
 # this is the editor window for writing R script
@@ -145,33 +145,38 @@ class(z)
 is.integer(z)
 is.numeric(z)
 
-# 4.2 Factor vector
+# 4.2 Factor vector / categorical data
 
 q1 <- c("Banana","Mango","Apple","Orange","Mango","Apple","Mango","Apple","Banana","Mango")
 q1
+class(q1)
 
-q2 <- as.factor(q1)
-q2
+q2 <- factor(q1)
+q2  # alphabetical order
+class(q2)
 as.numeric(q2)
 
+# Ordinal
+q3 <- factor(c("M.Eng", "M.Eng", "B.Eng","M.Eng", "D.Eng", "B.Eng"), levels = c("B.Eng","M.Eng","D.Eng"))
+q3
+as.numeric(q3)
+
 # 5. Calling Functions
+x <- 1:6
 x
 mean(x)
 ?mean
 
 # 6. Missing Data
 # 6.1 NA
-z <- c(1,2,NA,8,3,NA,3)
+z <- c(1,2,NA,4,NA,6)
 z
+mean(z)
+mean(z, na.rm = TRUE)
 is.na(z)
 
 # 6.2 NULL
-z <- c(1,2,NULL,8,3,NULL,3)
+z <- c(1,2,NULL,4,NULL,6)
 z
-
-d <- NULL
-
-# NULL is atomic, can't be in vector
-
 
 #################################################################################
