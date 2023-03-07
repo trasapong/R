@@ -1,7 +1,6 @@
 # https://github.com/WinVector/zmPDSwR/tree/master/Protein
 
-setwd("C:/Users/trasa/Google Drive/work/Courses/R_teaching_resources/R_code/data")
-protein <- read.table("protein.txt", sep="\t", header=TRUE)
+protein <- read.table("https://raw.githubusercontent.com/trasapong/R/main/protein.txt", sep="\t", header=TRUE)
 head(protein)
 summary(protein)
 
