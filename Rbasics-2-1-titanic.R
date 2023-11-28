@@ -6,19 +6,16 @@
 # or search "titanic dataset csv download"
 
 # see data dict on the page
+# https://www.kaggle.com/competitions/titanic/data
 
 # read in the data
 # can use GUI to import data
 
-getwd()
+# getwd()
+# setwd()
+# Note: R use / or //, windows use \
 
-# Note: windows system path : C:\Users\trasa\Google Drive\work\Courses\R_teaching_resources\R_code
-# change \ to / or //
-
-setwd("C:/Users/trasa/Google Drive/work/Courses/R_teaching_resources/R_code")
-
-# or
-# setwd("C:\Users\trasa\Google Drive\work\Courses\R_teaching_resources\R_code")
+URL <- "https://raw.githubusercontent.com/trasapong/R/main/titanic.csv"
 
 getwd()
 dir()
@@ -26,7 +23,7 @@ files <- dir()
 files
 
 ?read.csv
-titanic <- read.csv("titanic.csv")
+titanic <- read.csv(URL)
 View(titanic)
 summary(titanic)
 str(titanic)
@@ -66,5 +63,11 @@ ggplot(titanic, aes(x=familySize, fill = SurvivedLabel)) +
   geom_histogram(binwidth = 1)
 
 # try copy above command, change familySize -> Fare
+
+ggplot(titanic, aes(x=Fare, fill = SurvivedLabel)) +
+  theme_bw() +
+  facet_wrap(Sex ~ Pclass) +
+  geom_histogram(binwidth = 1)
+
 
 #################################################################################
