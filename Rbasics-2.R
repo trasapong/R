@@ -82,7 +82,7 @@ list5
 names(list6)
 list5[[1]]
 list5[["df"]]
-list5[[1]]$Sport
+list5[[1]]$z
 list5[[1]][,"z"]
 list5[[1]][,"z", drop = FALSE]
 length(list5)
