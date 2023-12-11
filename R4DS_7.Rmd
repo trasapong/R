@@ -43,7 +43,7 @@ There is no rule about which questions you should ask to guide your research. Ho
 
 2.  What type of **covariation** occurs between my variables?
 
-## Let's define some terms
+## Let's define some terms {.smaller}
 
 -   A **variable** is a quantity, quality, or property that you can measure.
 
