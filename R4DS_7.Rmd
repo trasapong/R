@@ -119,7 +119,9 @@ ggplot(data = smaller, mapping = aes(x = carat, colour = cut)) +
 Look for anything unexpected:
 
 -   Which values are the most common? Why?
+
 -   Which values are rare? Why? Does that match your expectations?
+
 -   Can you see any unusual patterns? What might explain them?
 
 ## 7.3.2 Typical values
@@ -127,7 +129,9 @@ Look for anything unexpected:
 As an example, the histogram (next slide) suggests several interesting questions:
 
 -   Why are there more diamonds at whole carats and common fractions of carats?
+
 -   Why are there more diamonds slightly to the right of each peak than there are slightly to the left of each peak?
+
 -   Why are there no diamonds bigger than 3 carats?
 
 ## 7.3.2 Typical values {.smaller}
