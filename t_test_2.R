@@ -1,19 +1,29 @@
 # t-test 
 # M.Miran (U British Columbia)
 
-setwd("C:/Users/trasa/Google Drive/work/Courses/R_teaching_resources/R_code/data")
+#setwd("C:/Users/trasa/Google Drive/work/Courses/R_teaching_resources/R_code/data")
 
-# 3 ways to import data
-Data1 <- read.table(file="LungCapData.txt", header = TRUE, sep=",")
-head(Data1)
+# Many ways to import data
+# ------------------------
+# 1) If data file is in the current working dir (use getwd() to see & use setwd() to set)
 
-Data2 <- read.table(file.choose(), header = TRUE, sep=",")
-head(Data2)
-# use "import dataset" tab on the right --> from text (base) ---> import as LungCapData
+# Data1 <- read.table(file="LungCapData.txt", header = TRUE, sep=",")
+# head(Data1)
+
+# 2) Choose file interactively
+
+# Data2 <- read.table(file.choose(), header = TRUE, sep=",")
+# head(Data2)
+
+# 3) Use "import dataset" tab on the right --> from text (base) ---> import as LungCapData
+
+# 4) Download from class's github repo
+LungCapData <- read.table(file="https://raw.githubusercontent.com/trasapong/R/main/LungCapData.txt", header = TRUE, sep=",")
 
 head(LungCapData)
 names(LungCapData)
 str(LungCapData)
+LungCapData$Smoke <- factor(LungCapData$Smoke)
 #View(LungCapData)  #   invoke a data viewer
 
 attach(LungCapData)
@@ -96,12 +106,21 @@ var(LungCap[Smoke=="no"])
 var(LungCap[Smoke=="yes"])
 
 # (3) Levene's Test (less sensitive to departures from normality, F-test for normal dist)
-library(car)
+library(car)  # Companion to Applied Regression
 leveneTest(LungCap~Smoke)
 # from p.value -> Reject Null -> vars are not equal
 
+#-------------------------------------------------------------------------
 # Paired t-test
-BloodPressure <- read.table(file.choose(), header = T, sep = "\t")
+
+# import BloodPressure.txt data
+
+# use file.choose() 
+#BloodPressure <- read.table(file.choose(), header = T, sep = "\t")
+
+# Download from class's github repo
+BloodPressure <- read.table(file="https://raw.githubusercontent.com/trasapong/R/main/BloodPressure.txt", header = TRUE, sep="\t")
+
 BloodPressure
 View(BloodPressure)
 str(BloodPressure)
