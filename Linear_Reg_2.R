@@ -1,8 +1,8 @@
 # Linear_Reg_2.R
 # Linear Regression
-setwd("C:/Users/trasa/Google Drive/work/Courses/R_teaching_resources/R_code/data")
+URL = "https://raw.githubusercontent.com/trasapong/R/main/LungCapData.txt"
 
-LungCapData <- read.table(file="LungCapData.txt", header = TRUE, sep=",")
+LungCapData <- read.table(file=URL, header = TRUE, sep=",")
 head(LungCapData)
 str(LungCapData)
 
