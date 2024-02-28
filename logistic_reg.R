@@ -50,8 +50,7 @@ qchisq(0.95,6)
 1-pchisq(6.0508,6)
 
 ###################################################
-setwd("C:/Users/trasa/Google Drive/work/Courses/R_teaching_resources/R_code/data")
-mydata <- read.table(file="binary.csv", header = TRUE, sep=",")
+mydata <- read.table(file="https://raw.githubusercontent.com/trasapong/R/main/binary.csv", header = TRUE, sep=",")
 # mydata <- read.csv("http://www.ats.ucla.edu/stat/data/binary.csv")
 # rank = school tier
 head(mydata)
@@ -111,4 +110,4 @@ qchisq(0.95,394)
 1-pchisq(458.52,394)
 
 confint(mylogit)
-#---- eof --------------------
+#---- EOF --------------------
