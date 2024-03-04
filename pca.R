@@ -1,8 +1,8 @@
 # PCA: Principal Component Analysis
 
 require(calibrate)
-setwd("C:/Users/trasa/Google Drive/work/Courses/R_teaching_resources/R_code/data")
-my.classes = read.csv("marks.dat")
+URL = "https://raw.githubusercontent.com/trasapong/R/main/marks.dat"
+my.classes = read.csv(URL)
 head(my.classes)
 plot(my.classes,cex=0.9,col="blue",main="Plot of Physics Scores vs. Stat Scores")
 options(digits=5)
@@ -117,8 +117,8 @@ biplot(my.prc, cex=c(1, 0.7))
 
 #################################################
 library(lattice)
-setwd("C:/Users/trasa/Google Drive/work/Courses/R_teaching_resources/R_code/data")
-(my.wines <- read.csv("wines.csv", header=TRUE))
+URL = "https://raw.githubusercontent.com/trasapong/R/main/wines.csv"
+(my.wines <- read.csv(URL, header=TRUE))
 
 # Look at the correlations
 
